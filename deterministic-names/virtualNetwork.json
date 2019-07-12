@@ -1,0 +1,85 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "vnetAddressPrefixes": {
+            "type": "array",
+            "defaultValue": [
+                "10.0.0.0/16"
+            ],
+            "metadata": {
+                "description": ""
+            }
+        },
+        "subnet1Name": {
+            "type": "string",
+            "defaultValue": "default",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "subnet1AddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/24",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "azureFirewallAddressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": ""
+            }
+        }
+    },
+    "variables": {
+        "vnetName": "[concat(parameters('prefix'), '-vnet')]",
+        "subnet1Name": "[concat(parameters('prefix'), '-', parameters('subnet1Name'))]",
+        "subnet1nsgId": "[concat(parameters('prefix'), '-nsg')]",
+        "subnet1routeId": "[concat(parameters('prefix'), '-route')]",
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2018-08-01",
+            "name": "[variables('vnetName')]",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "VirtualNetwork1"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": "[parameters('vnetAddressPrefixes')]"
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[variables('subnet1nsgId')]"
+                            },
+                            "routeTable": {
+                                "id": "[variables('subnet1routeId')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "AzureFirewall",
+                        "properties": {
+                            "addressPrefix": "[parameters('azureFirewallAddressPrefix')]"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

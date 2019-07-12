@@ -1,0 +1,134 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
+        },
+        "applicationRuleCollections": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "name": "allow-app-rules",
+                    "properties": {
+                        "priority": 100,
+                        "action": {
+                            "type": "allow"
+                        },
+                        "rules": [
+                            {
+                                "name": "allow-ase-tags",
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "protocols": [
+                                    {
+                                        "protocolType": "HTTP",
+                                        "port": "80"
+                                    },
+                                    {
+                                        "protocolType": "HTTPS",
+                                        "port": "443"
+                                    }
+                                ],
+                                "fqdnTags": [
+                                    "AppServiceEnvironment",
+                                    "WindowsUpdate"
+                                ]
+                            },
+                            {
+                                "name": "allow-ase-management",
+                                "sourceAddresses": [
+                                    "*"
+                                ],
+                                "protocols": [
+                                    {
+                                        "protocolType": "HTTP",
+                                        "port": "80"
+                                    },
+                                    {
+                                        "protocolType": "HTTPS",
+                                        "port": "443"
+                                    }
+                                ],
+                                "targetFqdns": [
+                                    "management.azure.com"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "metadata": {
+                "description": ""
+            }
+        },
+        "networkRuleCollections": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": ""
+            }
+        }
+    },
+    "variables": {
+        "azureFirewallName": "[concat(parameters('prefix'), '-azfw')]",
+        "azureFirewallSubnetId": "[concat(resourceId('Microsoft.Network/virtualNetworks', concat(parameters('prefix'), '-vnet')), '/subnets/AzureFirewallSubnet')]",
+        "azureFirewallPipName": "[concat(variables('azureFirewallName'), '-pip')]",
+        "azureFirewallPipId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('azureFirewallPipName'))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('azureFirewallPipName')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2017-10-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4"
+            }
+        },
+        {
+            "apiVersion": "2018-08-01",
+            "type": "Microsoft.Network/azureFirewalls",
+            "name": "[variables('azureFirewallName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('azureFirewallPipName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('azureFirewallSubnetId')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[variables('azureFirewallPipId')]"
+                            }
+                        }
+                    }
+                ],
+                "applicationRuleCollections": "[parameters('applicationRuleCollections')]",
+                "networkRuleCollections": "[parameters('networkRuleCollections')]"
+            },
+            "resources": []
+        }
+    ],
+    "outputs": {
+        "azureFirewallPrivateIp": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.Network/azureFirewalls', variables('azureFirewallName'))).ipConfigurations[0].properties.privateIPAddress]",
+            "metadata": {
+                "description": "The private IP of the Azure Firewall."
+            }
+        }
+    }
+}

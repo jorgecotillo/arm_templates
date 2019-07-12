@@ -1,0 +1,83 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "log-analytics-resource-group-name": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics resource group name. This value is used to get a reference to a Log Analytics instance"
+            }
+        },
+        "log-analytics-name": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics name. This value is used to get a reference to a Log Analytics instance"
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "5ee9e9ed-0b42-41b7-8c9c-3cfb2fbe2069",
+            "type": "Microsoft.Authorization/policyAssignments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "displayName": "[Preview]: Deploy Log Analytics Agent for Linux VM Scale Sets (VMSS) - Supports ISO control(s): A.12.4.1",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/5ee9e9ed-0b42-41b7-8c9c-3cfb2fbe2069",
+                "scope": "[subscription().subscriptionId]",
+                "notScopes": [],
+                "parameters": {
+                    "logAnalytics": {
+                        "value": "[reference(resourceId(parameters('log-analytics-resource-group-name'), 'Microsoft.OperationalInsights/workspaces', parameters('log-analytics-name')), '2015-03-20').customerId]"
+                    },
+                    "listOfImageIdToInclude": {
+                        "value": [
+                            "none"
+                        ]
+                    }
+                },
+                "metadata": {}
+            }
+        },
+        {
+            "name": "3c1b3629-c8f8-4bf6-862c-037cb9094038",
+            "type": "Microsoft.Authorization/policyAssignments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "displayName": "[Preview]: Deploy Log Analytics Agent for Windows VM Scale Sets (VMSS) - Supports ISO control(s): A.12.4.1",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/3c1b3629-c8f8-4bf6-862c-037cb9094038",
+                "scope": "[subscription().subscriptionId]",
+                "notScopes": [],
+                "parameters": {
+                    "logAnalytics": {
+                        "value": "[reference(resourceId(parameters('log-analytics-resource-group-name'), 'Microsoft.OperationalInsights/workspaces', parameters('log-analytics-name')), '2015-03-20').customerId]"
+                    },
+                    "listOfImageIdToInclude": {
+                        "value": [
+                            "none"
+                        ]
+                    }
+                },
+                "metadata": {}
+            }
+        },
+        {
+            "name": "f47b5582-33ec-4c5c-87c0-b010a6b2e917",
+            "type": "Microsoft.Authorization/policyAssignments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "displayName": "[Preview]: Audit Log Analytics Workspace for VM - Report Mismatch - Supports ISO control(s): A.12.4.1",
+                "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/f47b5582-33ec-4c5c-87c0-b010a6b2e917",
+                "scope": "[subscription().subscriptionId]",
+                "notScopes": [],
+                "parameters": {
+                    "logAnalyticsWorkspaceId": {
+                        "value": "[reference(resourceId(parameters('log-analytics-resource-group-name'), 'Microsoft.OperationalInsights/workspaces', parameters('log-analytics-name')), '2015-03-20').customerId]"
+                    }
+                },
+                "metadata": {}
+            }
+        }
+    ],
+    "outputs": {}
+}
