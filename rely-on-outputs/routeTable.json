@@ -35,7 +35,7 @@
                         }
                     },
                     {
-                        "name": "route-name",
+                        "name": "default",
                         "properties": {
                             "addressPrefix": "0.0.0.0/0",
                             "nextHopType": "VirtualAppliance",
