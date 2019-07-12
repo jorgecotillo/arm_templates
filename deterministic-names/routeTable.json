@@ -34,7 +34,7 @@
                         "properties": {
                             "addressPrefix": "0.0.0.0/0",
                             "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "[reference(resourceId('Microsoft.Network/azureFirewalls', variables('azureFirewallName'))).ipConfigurations[0].properties.privateIPAddress]"
+                            "nextHopIpAddress": "[reference(resourceId(subscription().id, resourceGroup().name, 'Microsoft.Network/azureFirewalls', variables('azureFirewallName')), '2018-08-01').ipConfigurations[0].properties.privateIPAddress]"
                         }
                     }
                 ],
