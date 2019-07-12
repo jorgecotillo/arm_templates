@@ -43,7 +43,7 @@
         "vnetName": "[concat(parameters('prefix'), '-vnet')]",
         "subnet1Name": "[concat(parameters('prefix'), '-', parameters('subnet1Name'))]",
         "subnet1nsgId": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('prefix'), '-nsg'))]",
-        "subnet1routeId": "[resourceId('Microsoft.Network/routeTables', concat(parameters('prefix'), '-route'))]",
+        "subnet1routeId": "[resourceId('Microsoft.Network/routeTables', concat(parameters('prefix'), '-route'))]"
     },
     "resources": [
         {
