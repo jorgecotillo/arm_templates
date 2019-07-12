@@ -84,7 +84,7 @@
                         }
                     },
                     {
-                        "name": "AzureFirewall",
+                        "name": "AzureFirewallSubnet",
                         "properties": {
                             "addressPrefix": "[parameters('azureFirewallAddressPrefix')]"
                         }
